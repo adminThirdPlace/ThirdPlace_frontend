@@ -30,18 +30,24 @@ interface PaymentFailureData {
   error: any;
 }
 
-class PaymentService {
-  /**
+class PaymentService {  /**
    * Create a payment order for booking
    */
-  async createPaymentOrder(eventId: string, numberOfSeats: number): Promise<CreateOrderResponse> {
+  async createPaymentOrder(eventId: string, numberOfSeats: number, amount?: number): Promise<CreateOrderResponse> {
     try {
-      console.log('Creating payment order:', { eventId, numberOfSeats });
+      console.log('Creating payment order:', { eventId, numberOfSeats, amount });
       
-      const response = await api.post('/payment/create-order', {
+      const requestBody: any = {
         eventId,
         numberOfSeats,
-      });
+      };
+
+      // Include amount if provided
+      if (amount !== undefined) {
+        requestBody.amount = amount;
+      }
+
+      const response = await api.post('/payment/create-order', requestBody);
 
       console.log('Payment order response:', response.data);
 

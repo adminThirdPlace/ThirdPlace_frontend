@@ -93,16 +93,24 @@ function EventPageContent({ params }: PageProps) {
     try {
       setIsLoading(true);
 
+      console.log('💰 Payment calculation details:', {
+        baseCuration: event.price,
+        discountPercentage: event.discountedPrice || 0,
+        experienceTicketPrice: event.experienceTicketPrice,
+        grandTotal,
+        numberOfSeats
+      });
+
       // Log payment initiation
       PaymentUtils.logPaymentActivity('PAYMENT_INITIATED', {
         eventId: event._id,
         eventName: event.title,
         numberOfSeats,
-        totalAmount: event.experienceTicketPrice + event.price
+        totalAmount: grandTotal
       });
 
-      // Create payment order
-      const orderResponse = await paymentService.createPaymentOrder(event._id, numberOfSeats);      
+      // Create payment order with the calculated grandTotal
+      const orderResponse = await paymentService.createPaymentOrder(event._id, numberOfSeats, grandTotal);
       PaymentUtils.logPaymentActivity('ORDER_CREATED', {
         orderId: orderResponse.data.orderId,
         bookingId: orderResponse.data.bookingId,
