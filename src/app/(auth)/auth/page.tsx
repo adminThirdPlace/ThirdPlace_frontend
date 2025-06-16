@@ -41,17 +41,40 @@ interface FormData {
 }
 
 export default function AuthPage() {
+  try {
+    return <AuthPageContent />;
+  } catch (error) {
+    console.error('Unexpected error in AuthPage:', error);
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center space-y-4 p-6">
+          <div className="text-red-500 text-lg font-[family-name:var(--font-crimson-pro)]">
+            Something went wrong
+          </div>
+          <button 
+            onClick={() => window.location.href = '/'}
+            className="bg-black text-white px-6 py-2 rounded-lg font-[family-name:var(--font-crimson-pro)]"
+          >
+            Go to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+}
+
+function AuthPageContent() {
   const router = useRouter();
   const { user, loading: authLoading, refreshUserState } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [resendLoading, setResendLoading] = useState(false);
-  const [error, setError] = useState('');const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);  const [error, setError] = useState('');const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const [isExistingUser, setIsExistingUser] = useState<boolean | null>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [resendTimer, setResendTimer] = useState(0);
   const [canResend, setCanResend] = useState(true);
   const [redirecting, setRedirecting] = useState(false);
+  const [componentError, setComponentError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
     phoneNumber: '',
@@ -74,8 +97,7 @@ export default function AuthPage() {
   const getTotalSteps = () => {
     if (isExistingUser === null) return 2; // Phone + OTP
     return isExistingUser ? 2 : 3; // Existing: Phone + OTP, New: Phone + OTP + Info
-  };
-  // Add console logging for debugging
+  };  // Add console logging for debugging
   useEffect(() => {
     console.log('🔐 Auth Page: Auth state', {
       isAuthenticated: !!user,
@@ -84,14 +106,41 @@ export default function AuthPage() {
       authLoading,
       isExistingUser    });
   }, [user, authLoading, isExistingUser]);
-  // Initialize reCAPTCHA when component mounts
+  // Handle authenticated user redirect
   useEffect(() => {
-    authService.initializeRecaptcha();
+    if (user && !authLoading) {
+      console.log('🔐 Auth Page: User authenticated, redirecting to dashboard...');
+      try {
+        router.replace('/dashboard');
+      } catch (error) {
+        console.error('Error redirecting to dashboard:', error);
+        // Fallback: try using window.location
+        window.location.href = '/dashboard';
+      }
+    }
+  }, [user, authLoading, router]);// Initialize reCAPTCHA when component mounts (only if user is not authenticated)
+  useEffect(() => {
+    // Only initialize reCAPTCHA if user is not authenticated and not still loading
+    if (!user && !authLoading) {
+      try {
+        authService.initializeRecaptcha();
+      } catch (error) {
+        console.error('Error initializing reCAPTCHA:', error);
+        // Gracefully handle reCAPTCHA initialization errors
+        setComponentError('Failed to initialize authentication. Please try again.');
+      }
+    }
     
     return () => {
-      authService.cleanup();
+      if (!user && !authLoading) {
+        try {
+          authService.cleanup();
+        } catch (error) {
+          console.error('Error cleaning up auth service:', error);
+        }
+      }
     };
-  }, []);
+  }, [user, authLoading]);
 
   // Timer effect for OTP resend
   useEffect(() => {
@@ -563,7 +612,13 @@ export default function AuthPage() {
   );  // Early return for authenticated user to prevent flash
   if (user && !authLoading) {
     console.log('🔐 Auth Page: User authenticated, redirecting...');
-    router.replace('/dashboard');
+    try {
+      router.replace('/dashboard');
+    } catch (error) {
+      console.error('Error redirecting to dashboard:', error);
+      // Fallback: try using window.location
+      window.location.href = '/dashboard';
+    }
     return <DashboardSkeleton />;
   }
 
@@ -579,10 +634,31 @@ export default function AuthPage() {
         </div>
       </div>
     );
-  }
-  // Show loading state when redirecting
+  }  // Show loading state when redirecting
   if (redirecting) {
     return <DashboardSkeleton />;
+  }
+
+  // Show error state if component error occurred
+  if (componentError) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center space-y-4 p-6">
+          <div className="text-red-500 text-lg font-[family-name:var(--font-crimson-pro)]">
+            Something went wrong
+          </div>
+          <button 
+            onClick={() => {
+              setComponentError(null);
+              router.replace('/');
+            }}
+            className="bg-black text-white px-6 py-2 rounded-lg font-[family-name:var(--font-crimson-pro)]"
+          >
+            Go to Home
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
