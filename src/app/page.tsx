@@ -11,9 +11,9 @@ import PickVibe from '../components/PickVibe';
 import FindTribe from '../components/FindTribe';
 import WhatsappSection from '@/components/ui/WhatsappSection';
 import Footer from '../components/Footer';
+import Image from 'next/image';
 
 export default function Home() {
-  // 🔊 only one video ID lives here
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
 
   return (
@@ -22,7 +22,6 @@ export default function Home() {
         <Header />
       </div>
 
-      {/* pass control props to any section that holds a video */}
       <HeroSection
         videoId="hero"
         activeVideo={activeVideo}
@@ -37,12 +36,15 @@ export default function Home() {
         activeVideo={activeVideo}
         setActiveVideo={setActiveVideo}
       />
-<section id="how-it-works" className="scroll-mt-24">
-  <StepCarousel />
-</section>
-     <section id="pick-vibe" className="scroll-mt-24">
-  <PickVibe />
-</section>
+
+      <section id="how-it-works" className="scroll-mt-24">
+        <StepCarousel />
+      </section>
+
+      <section id="pick-vibe" className="scroll-mt-24">
+        <PickVibe />
+      </section>
+
       <FindTribe />
       <WhatsappSection />
       <Footer />
