@@ -5,7 +5,7 @@ import AuthLink from './AuthLink';
 function PickVibe() {
   return (
     <div className=" w-full bg-white text-black flex flex-col items-center justify-center text-center p-4 pb-13 py-3 -mt-2">
-      <h1 className="text-[32px] sm:text-5xl md:text-6xl lg:text-7xl  font-serif mb-1">
+      <h1 className="text-[32px] sm:text-5xl md:text-6xl lg:text-7xl  mb-1">
         PICK YOUR <span className="italic">VIBE</span>
       </h1>
       <h2 className="text-[18px] sm:text-xl -mt-0.5 md:text-2xl ">
