@@ -551,7 +551,7 @@ function AuthPageContent() {
           />
         </div>        <div> 
           <label className="block text-xl text-gray-700 mb-1 font-light font-[family-name:var(--font-crimson-pro)]" style={{ fontWeight: 300 }}>
-            Email
+            Email*
           </label>
           <input
             type="email"
@@ -601,7 +601,7 @@ function AuthPageContent() {
           </div>
         )}        <button
           onClick={handleNext}
-          disabled={!formData.firstName || !formData.gender || !formData.dateOfBirth  || loading}
+          disabled={!formData.firstName || !formData.gender || !formData.dateOfBirth  || !formData.email ||loading}
           className="w-full bg-black text-white py-3 rounded-lg text-xl font-medium disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors font-[family-name:var(--font-crimson-pro)] flex items-center justify-center gap-2" style={{ fontWeight: 500 }}
         >
           {loading && <Spinner size={20} />}
