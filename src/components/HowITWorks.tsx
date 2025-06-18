@@ -48,6 +48,7 @@ const slides: Step[] = [
 /* ---------- sizing ---------- */
 const CARD_W = 270;
 const CARD_H = 320;
+const PEEK   = 40;             // visible width of neighbour cards
 
 /* ---------- helper ---------- */
 const clamp = (v: number, max: number) => Math.max(0, Math.min(v, max));
@@ -75,11 +76,9 @@ export default function StepCarousel() {
     if (Math.abs(e.deltaX) < 15 && Math.abs(e.deltaY) < 15) return;
     lock.current = true;
     if (e.deltaX > 0 || e.deltaY > 0) {
-      setDir(1);
-      next();
+      setDir(1); next();
     } else {
-      setDir(-1);
-      prev();
+      setDir(-1); prev();
     }
     setTimeout(() => (lock.current = false), 350);
   };
@@ -134,23 +133,43 @@ export default function StepCarousel() {
       style={{ touchAction: "pan-y pinch-zoom" }}
     >
       {/* Headings */}
-      <h1 className="text-black text-[28px] sm:text-3xl mt-12 text-center">
+      <h1 className="text-black text-[32px] sm:text-5xl md:text-6xl lg:text-7xl  mt-12 text-center">
         HOW IT <span className="italic">WORKS?</span>
       </h1>
-      <h2 className="text-black text-center text-[15px] sm:text-base -mt-3">
+      <h2 className="text-black text-center text-[18px] sm:text-base -mt-3">
         Real connection in 3 easy steps
       </h2>
 
       {/* Progress bar */}
-      <div className="w-[240px] h-px bg-[#E5E5E5] rounded-full overflow-hidden">
+      <div className="w-[266px] h-px bg-[#E5E5E5] rounded-full overflow-hidden">
         <div className="h-full bg-black transition-all" style={{ width: `${pct}%` }} />
       </div>
 
-      {/* Slide frame */}
+      {/* Slide frame (neighbour peeks) */}
       <div
-        className="relative overflow-hidden"
-        style={{ width: CARD_W, height: CARD_H }}
+        className="relative"
+        style={{
+          width: CARD_W + PEEK * 2,  // room for peeks
+          height: CARD_H,
+          overflow: "hidden",
+        }}
       >
+        {/* Left neighbour */}
+        {idx > 0 && (
+          <div
+            className="absolute top-0 opacity-60 pointer-events-none"
+            style={{
+              left: PEEK - CARD_W,       // only rightmost PEEK px visible
+              width: CARD_W,
+              height: CARD_H,
+              transform: "scale(0.92)",
+            }}
+          >
+            <Card step={slides[idx - 1]} />
+          </div>
+        )}
+
+        {/* Main animated card */}
         <AnimatePresence custom={dir} initial={false} mode="popLayout">
           <motion.div
             key={slides[idx].id}
@@ -160,20 +179,36 @@ export default function StepCarousel() {
             animate="center"
             exit="exit"
             transition={{ type: "spring", stiffness: 260, damping: 28 }}
-            className="absolute inset-0 flex items-center justify-center"
+            className="absolute"
+            style={{ top: 0, left: PEEK }}  // centred card
           >
             <Card step={slides[idx]} />
           </motion.div>
         </AnimatePresence>
+
+        {/* Right neighbour */}
+        {idx < slides.length - 1 && (
+          <div
+            className="absolute top-0 opacity-60 pointer-events-none"
+            style={{
+              left: PEEK + CARD_W,       // only leftmost PEEK px visible
+              width: CARD_W,
+              height: CARD_H,
+              transform: "scale(0.92)",
+            }}
+          >
+            <Card step={slides[idx + 1]} />
+          </div>
+        )}
       </div>
 
       {/* CTA */}
-    <Link
-  href="/auth"
-  className="w-[210px] mb-14 mt-4 bg-black h-[40px] text-white rounded-xl py-1.5 text-[18px] hover:bg-gray-800 transition-colors flex items-center justify-center"
->
-  START YOUR JOURNEY
-</Link>
+      <Link
+        href="/auth"
+        className="w-[210px] mb-14 mt-4 bg-black h-[40px] text-white rounded-xl py-1.5 text-[18px] hover:bg-gray-800 transition-colors flex items-center justify-center"
+      >
+        START YOUR JOURNEY
+      </Link>
     </div>
   );
 }
