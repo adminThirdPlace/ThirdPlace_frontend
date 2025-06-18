@@ -54,9 +54,9 @@ const PEEK   = 40;             // visible width of neighbour cards
 const clamp = (v: number, max: number) => Math.max(0, Math.min(v, max));
 
 export default function StepCarousel() {
-  const [idx, setIdx] = useState(0);     // current slide index
+  const [idx, setIdx] = useState(0);
   const [dir, setDir] = useState(0);     // -1 = back, 1 = next
-  const lock = useRef(false);            // wheel debounce
+  const lock = useRef(false);
 
   const next = () => setIdx(i => clamp(i + 1, slides.length - 1));
   const prev = () => setIdx(i => clamp(i - 1, slides.length - 1));
@@ -95,7 +95,6 @@ export default function StepCarousel() {
     <div
       className="rounded-2xl shadow-sm flex flex-col items-center px-4 py-5 bg-[#FAF0E5]"
       style={{ width: CARD_W, height: CARD_H }}
-      {...swipeHandlers}
     >
       <div
         className={`w-6 h-6 flex items-center justify-center rounded-full bg-black text-white text-[16px] mb-3 select-none ${dmSans.className}`}
@@ -128,12 +127,11 @@ export default function StepCarousel() {
   return (
     <div
       className="flex flex-col items-center w-full bg-white space-y-4 select-none"
-      {...swipeHandlers}
       onWheel={onWheel}
       style={{ touchAction: "pan-y pinch-zoom" }}
     >
       {/* Headings */}
-      <h1 className="text-black text-[32px] sm:text-5xl md:text-6xl lg:text-7xl  mt-12 text-center">
+      <h1 className="text-black text-[32px] sm:text-5xl md:text-6xl lg:text-7xl mt-12 text-center">
         HOW IT <span className="italic">WORKS?</span>
       </h1>
       <h2 className="text-black text-center text-[18px] sm:text-base -mt-3">
@@ -145,21 +143,22 @@ export default function StepCarousel() {
         <div className="h-full bg-black transition-all" style={{ width: `${pct}%` }} />
       </div>
 
-      {/* Slide frame (neighbour peeks) */}
+      {/* Slide frame (with swipe handlers) */}
       <div
         className="relative"
         style={{
-          width: CARD_W + PEEK * 2,  // room for peeks
+          width: CARD_W + PEEK * 2,
           height: CARD_H,
           overflow: "hidden",
         }}
+        {...swipeHandlers}
       >
         {/* Left neighbour */}
         {idx > 0 && (
           <div
             className="absolute top-0 opacity-60 pointer-events-none"
             style={{
-              left: PEEK - CARD_W,       // only rightmost PEEK px visible
+              left: PEEK - CARD_W,
               width: CARD_W,
               height: CARD_H,
               transform: "scale(0.92)",
@@ -180,7 +179,7 @@ export default function StepCarousel() {
             exit="exit"
             transition={{ type: "spring", stiffness: 260, damping: 28 }}
             className="absolute"
-            style={{ top: 0, left: PEEK }}  // centred card
+            style={{ top: 0, left: PEEK }}
           >
             <Card step={slides[idx]} />
           </motion.div>
@@ -191,7 +190,7 @@ export default function StepCarousel() {
           <div
             className="absolute top-0 opacity-60 pointer-events-none"
             style={{
-              left: PEEK + CARD_W,       // only leftmost PEEK px visible
+              left: PEEK + CARD_W,
               width: CARD_W,
               height: CARD_H,
               transform: "scale(0.92)",
