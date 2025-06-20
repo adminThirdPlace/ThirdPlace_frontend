@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Crimson_Pro } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
 // Import Crimson Pro font
 const crimsonPro = Crimson_Pro({
   variable: "--font-crimson-pro",
@@ -25,6 +25,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={`${crimsonPro.variable} antialiased`}>
           {children}
+            <SpeedInsights />
         </body>
       </html>
     </AuthProvider>
