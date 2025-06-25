@@ -37,6 +37,7 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [personalityTestFilter, setPersonalityTestFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -51,9 +52,9 @@ export default function UsersPage() {
       setLoading(true);
       const response = await adminService.getAllUsers(currentPage, 20);
       
-      // Users are now returned directly from the new endpoint
+      // Handle the new response format
       setUsers(response.users || []);
-      setTotalPages(response.totalPages || 1);
+      setTotalPages(response.pagination?.totalPages || 1);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch users');
       setUsers([]); // Set empty array on error
@@ -62,12 +63,18 @@ export default function UsersPage() {
     }
   };
 
-  const filteredUsers = users.filter(user =>
-    (user.firstName && user.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (user.lastName && user.lastName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (user.phoneNumber && user.phoneNumber.includes(searchTerm))
-  );
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = (user.firstName && user.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.lastName && user.lastName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.phoneNumber && user.phoneNumber.includes(searchTerm));
+    
+    const matchesPersonalityTest = personalityTestFilter === 'all' || 
+      (personalityTestFilter === 'completed' && user.personalityTestCompleted) ||
+      (personalityTestFilter === 'pending' && !user.personalityTestCompleted);
+    
+    return matchesSearch && matchesPersonalityTest;
+  });
 
   const handleViewUser = (user: User) => {
     setSelectedUser(user);
@@ -94,9 +101,17 @@ export default function UsersPage() {
           <div className="bg-white px-4 py-2 rounded-lg border border-gray-200">
             <div className="flex items-center text-sm text-gray-600">
               <Users className="h-4 w-4 mr-2" />
-              Total Users: {filteredUsers.length}
+              Total Users: {users.length}
             </div>
           </div>
+          {(searchTerm || personalityTestFilter !== 'all') && (
+            <div className="bg-blue-50 px-4 py-2 rounded-lg border border-blue-200">
+              <div className="flex items-center text-sm text-blue-600">
+                <Filter className="h-4 w-4 mr-2" />
+                Filtered: {filteredUsers.length}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -115,10 +130,21 @@ export default function UsersPage() {
               />
             </div>
           </div>
-          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center">
-            <Filter className="h-4 w-4 mr-2" />
-            Filters
-          </button>
+          <div className="flex gap-3">
+            <select
+              value={personalityTestFilter}
+              onChange={(e) => setPersonalityTestFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="all">All Users</option>
+              <option value="completed">Test Completed</option>
+              <option value="pending">Test Pending</option>
+            </select>
+            <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center">
+              <Filter className="h-4 w-4 mr-2" />
+              More Filters
+            </button>
+          </div>
         </div>
       </div>
 
