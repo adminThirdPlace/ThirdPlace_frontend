@@ -48,14 +48,15 @@ const slides: Step[] = [
 /* ---------- sizing ---------- */
 const CARD_W = 270;
 const CARD_H = 320;
-const PEEK   = 40;             // visible width of neighbour cards
+const PEEK   = 50; // width of the “peek” you want to show
+const GAP    = 8;  // **constant space between any two cards**
 
-/* ---------- helper ---------- */
+/* ---------- helpers ---------- */
 const clamp = (v: number, max: number) => Math.max(0, Math.min(v, max));
 
 export default function StepCarousel() {
   const [idx, setIdx] = useState(0);
-  const [dir, setDir] = useState(0);     // -1 = back, 1 = next
+  const [dir, setDir] = useState(0);      // -1 = back, 1 = next
   const lock = useRef(false);
 
   const next = () => setIdx(i => clamp(i + 1, slides.length - 1));
@@ -75,11 +76,8 @@ export default function StepCarousel() {
     if (lock.current) return;
     if (Math.abs(e.deltaX) < 15 && Math.abs(e.deltaY) < 15) return;
     lock.current = true;
-    if (e.deltaX > 0 || e.deltaY > 0) {
-      setDir(1); next();
-    } else {
-      setDir(-1); prev();
-    }
+    if (e.deltaX > 0 || e.deltaY > 0) { setDir(1);  next(); }
+    else                               { setDir(-1); prev(); }
     setTimeout(() => (lock.current = false), 350);
   };
 
@@ -93,7 +91,7 @@ export default function StepCarousel() {
   /* ---------- Card ---------- */
   const Card = ({ step }: { step: Step }) => (
     <div
-      className="rounded-2xl shadow-sm flex flex-col items-center px-4 py-5 bg-[#FAF0E5]"
+      className="rounded-4xl shadow-sm flex flex-col items-center px-4 py-5 bg-[#FAF0E5]"
       style={{ width: CARD_W, height: CARD_H }}
     >
       <div
@@ -123,15 +121,25 @@ export default function StepCarousel() {
   /* ---------- progress ---------- */
   const pct = ((idx + 1) / slides.length) * 100;
 
+  /* ---------- dynamic positions ---------- */
+  const hasLeft  = idx > 0;
+  const hasRight = idx < slides.length - 1;
+
+  // main card’s left edge: flush on first slide, shifted when a left neighbour exists
+  const mainLeft = hasLeft ? PEEK + GAP : 0;
+
+  // frame width so that the right neighbour peeks by `PEEK`
+  const frameW   = mainLeft + CARD_W + GAP + PEEK;
+
   /* ---------- render ---------- */
   return (
     <div
-      className="flex flex-col items-center w-full bg-white space-y-4 select-none"
+      className="flex flex-col items-center w-full -mt-2 bg-white space-y-4 select-none"
       onWheel={onWheel}
       style={{ touchAction: "pan-y pinch-zoom" }}
     >
       {/* Headings */}
-      <h1 className="text-black text-[32px] sm:text-5xl md:text-6xl lg:text-7xl mt-12 text-center">
+      <h1 className="text-black text-[32px] sm:text-5xl md:text-6xl lg:text-7xl text-center">
         HOW IT <span className="italic">WORKS?</span>
       </h1>
       <h2 className="text-black text-center text-[18px] sm:text-base -mt-3">
@@ -139,26 +147,22 @@ export default function StepCarousel() {
       </h2>
 
       {/* Progress bar */}
-      <div className="w-[266px] h-px bg-[#E5E5E5] rounded-full overflow-hidden">
+      <div className="w-[310px] -ml-4 h-px bg-[#E5E5E5] rounded-full overflow-hidden">
         <div className="h-full bg-black transition-all" style={{ width: `${pct}%` }} />
       </div>
 
-      {/* Slide frame (with swipe handlers) */}
+      {/* Slide frame */}
       <div
         className="relative"
-        style={{
-          width: CARD_W + PEEK * 2,
-          height: CARD_H,
-          overflow: "hidden",
-        }}
+        style={{ width: frameW, height: CARD_H, overflow: "hidden" }}
         {...swipeHandlers}
       >
         {/* Left neighbour */}
-        {idx > 0 && (
+        {hasLeft && (
           <div
             className="absolute top-0 opacity-60 pointer-events-none"
             style={{
-              left: PEEK - CARD_W,
+              left: mainLeft - GAP - CARD_W,
               width: CARD_W,
               height: CARD_H,
               transform: "scale(0.92)",
@@ -179,18 +183,18 @@ export default function StepCarousel() {
             exit="exit"
             transition={{ type: "spring", stiffness: 260, damping: 28 }}
             className="absolute"
-            style={{ top: 0, left: PEEK }}
+            style={{ top: 0, left: mainLeft }}
           >
             <Card step={slides[idx]} />
           </motion.div>
         </AnimatePresence>
 
         {/* Right neighbour */}
-        {idx < slides.length - 1 && (
+        {hasRight && (
           <div
             className="absolute top-0 opacity-60 pointer-events-none"
             style={{
-              left: PEEK + CARD_W,
+              left: mainLeft + CARD_W + GAP,
               width: CARD_W,
               height: CARD_H,
               transform: "scale(0.92)",
