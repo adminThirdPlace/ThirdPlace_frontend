@@ -20,7 +20,7 @@ function WhatsappSection() {
       <div className="relative flex items-center justify-center mb-8">
         {/* Subtle Glowing effect */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-[310px] h-[520px] rounded-3xl blur-lg  bg-white opacity-15" />
+          <div className="w-[310px] h-[520px] rounded-3xl blur-lg " />
         </div>
         {/* Main Image */}
         <Image

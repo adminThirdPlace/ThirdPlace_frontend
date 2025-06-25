@@ -38,14 +38,17 @@ function HeroSection({ videoId, activeVideo, setActiveVideo }: Props) {
       {/* -------- Existing content below stays exactly the same -------- */}
       <div className="w-full px-4 mt-8 flex flex-col lg:flex-row lg:items-center lg:justify-between max-w-6xl mx-auto">
         <div className="w-full lg:w-2/3 text-center lg:text-left">
-          <h1 className="text-[32px] sm:text-5xl md:text-6xl lg:text-7xl  text-white tracking-tight ">
-            REAL CONNECTIONS,
+          <h1 className="text-[30px] uppercase italic sm:text-5xl md:text-6xl lg:text-7xl  text-white tracking-tight ">
+         Find something real✨
           </h1>
-          <h1 className="text-[32px] sm:text-5xl md:text-6xl lg:text-7xl text-white tracking-tight -mt-2 mb-4">
-            REAL LIFE
+          <h1 className="text-[32px] sm:text-5xl italic md:text-6xl lg:text-7xl text-white tracking-tight -mt-2 mb-4">
+           
           </h1>
-          <p className="text-[18px] sm:text-xl md:text-2xl lg:text-3xl text-gray-200 max-w-2xl mx-auto lg:mx-0">
-            Find your people through curated experiences.
+          <p className="text-[22px] sm:text-xl font-[300] md:text-2xl lg:text-3xl text-gray-200 max-w-2xl mx-auto lg:mx-0">
+           Curated IRL experiences that spark 
+          </p>
+          <p className="text-[22px] sm:text-xl font-[300] md:text-2xl lg:text-3xl text-gray-200 max-w-2xl mx-auto lg:mx-0">
+           real connections.
           </p>
         </div>
         <div className="mt-6 lg:mt-0 lg:ml-8 flex justify-center lg:justify-end w-full lg:w-1/3">

@@ -18,7 +18,7 @@ export default function Home() {
   /* ───────── smooth-scroll helper ───────── */
   const scrollToWhyNeed = () => {
     document
-      .getElementById("why-need")                 // anchor target
+      .getElementById("pick-vibe")                 // anchor target
       ?.scrollIntoView({ behavior: "smooth" });   // nice & slow
   };
 
@@ -37,7 +37,7 @@ export default function Home() {
       {/* arrow → scroll to WHY NEED section */}
       <DoubleDownArrow onClick={scrollToWhyNeed} />
 
-      {/* ---------- WHY NEED ---------- */}
+      {/* ---------- WHY NEED ----------
       <div id="why-need" className="scroll-mt-26.5">
         <WhyNeed />
       </div>
@@ -46,15 +46,16 @@ export default function Home() {
         videoId="news"
         activeVideo={activeVideo}
         setActiveVideo={setActiveVideo}
-      />
+      /> */}
+          <section id="pick-vibe" className="scroll-mt-24">
+        <PickVibe />
+      </section>
 
       <section id="how-it-works" className="scroll-mt-24">
         <StepCarousel />
       </section>
 
-      <section id="pick-vibe" className="scroll-mt-24">
-        <PickVibe />
-      </section>
+  
 
       <FindTribe />
       <WhatsappSection />
