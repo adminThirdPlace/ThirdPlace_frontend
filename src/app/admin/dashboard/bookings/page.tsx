@@ -27,17 +27,24 @@ export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
+  const [eventFilter, setEventFilter] = useState<string>('all');
+  const [events, setEvents] = useState<{_id: string, title: string}[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalBookings, setTotalBookings] = useState(0);
   const [updating, setUpdating] = useState<string | null>(null);
 
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      const filters = filter !== 'all' ? { status: filter } : undefined;
-      const response = await adminService.getAllBookings(page, 20, filters);
+      const filters: any = {};
+      if (filter !== 'all') filters.status = filter;
+      if (eventFilter !== 'all') filters.eventId = eventFilter;
+      
+      const response = await adminService.getAllBookings(page, 20, Object.keys(filters).length > 0 ? filters : undefined);
       setBookings(response.bookings || []);
       setTotalPages(response.totalPages || 1);
+      setTotalBookings(response.total || response.bookings?.length || 0);
     } catch (error) {
       console.error('Error fetching bookings:', error);
     } finally {
@@ -45,9 +52,23 @@ export default function BookingsPage() {
     }
   };
 
+  const fetchEvents = async () => {
+    try {
+      // Get all events with a high limit for the dropdown
+      const response = await adminService.getAllEvents(1, 1000);
+      setEvents(response.events || []);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
   useEffect(() => {
     fetchBookings();
-  }, [page, filter]);
+  }, [page, filter, eventFilter]);
 
   const handleStatusUpdate = async (bookingId: string, newStatus: 'waitlist' | 'confirmed' | 'cancelled') => {
     try {
@@ -109,27 +130,87 @@ export default function BookingsPage() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Booking Management</h1>
+        <div className="flex justify-between items-start mb-2">
+          <h1 className="text-2xl font-bold text-gray-900">Booking Management</h1>
+          {totalBookings > 0 && (
+            <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+              {totalBookings} booking{totalBookings !== 1 ? 's' : ''} found
+            </span>
+          )}
+        </div>
         <p className="text-gray-600">Manage event bookings and update statuses</p>
+        
+        {/* Active Filters Summary */}
+        {(filter !== 'all' || eventFilter !== 'all') && (
+          <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-medium text-blue-800">Active filters:</span>
+              {filter !== 'all' && (
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  Status: {getStatusText(filter)}
+                </span>
+              )}
+              {eventFilter !== 'all' && (
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  Event: {events.find(e => e._id === eventFilter)?.title || 'Unknown Event'}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Filters */}
-      <div className="mb-6 flex gap-4 items-center">
-        <label className="text-sm font-medium text-gray-700">Filter by status:</label>
-        <select
-          value={filter}
-          onChange={(e) => {
-            setFilter(e.target.value);
-            setPage(1);
-          }}
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="all">All Bookings</option>
-          <option value="pending_payment">Pending Payment</option>
-          <option value="waitlist">Waitlisted</option>
-          <option value="confirmed">Confirmed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
+      <div className="mb-6 flex flex-col sm:flex-row flex-wrap gap-4 items-start sm:items-center">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+          <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Filter by status:</label>
+          <select
+            value={filter}
+            onChange={(e) => {
+              setFilter(e.target.value);
+              setPage(1);
+            }}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[160px]"
+          >
+            <option value="all">All Statuses</option>
+            <option value="pending_payment">Pending Payment</option>
+            <option value="waitlist">Waitlisted</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+          <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Filter by event:</label>
+          <select
+            value={eventFilter}
+            onChange={(e) => {
+              setEventFilter(e.target.value);
+              setPage(1);
+            }}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[200px] max-w-[300px]"
+          >
+            <option value="all">All Events</option>
+            {events.map((event) => (
+              <option key={event._id} value={event._id}>
+                {event.title.length > 30 ? `${event.title.substring(0, 30)}...` : event.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {(filter !== 'all' || eventFilter !== 'all') && (
+          <button
+            onClick={() => {
+              setFilter('all');
+              setEventFilter('all');
+              setPage(1);
+            }}
+            className="px-3 py-2 text-sm text-blue-600 hover:text-blue-800 border border-blue-300 rounded-md hover:bg-blue-50 transition-colors"
+          >
+            Clear All Filters
+          </button>
+        )}
       </div>
 
       {/* Bookings Table */}
