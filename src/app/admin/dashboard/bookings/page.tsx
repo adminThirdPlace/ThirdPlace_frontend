@@ -10,13 +10,13 @@ interface Booking {
     lastName: string;
     email: string;
     phoneNumber: string;
-  };
+  } | null;
   eventId: {
     _id: string;
     title: string;
     startTime: string;
     price: number;
-  };
+  } | null;
   numberOfSeats: number;
   totalAmount: number;
   bookingStatus: 'pending_payment' | 'waitlist' | 'confirmed' | 'cancelled';
@@ -162,23 +162,38 @@ export default function BookingsPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {bookings.map((booking) => (
+              {bookings && bookings.length > 0 ? bookings.map((booking) => (
                 <tr key={booking._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-gray-900">
-                        {booking.userId.firstName} {booking.userId.lastName}
+                        {booking.userId ? 
+                          `${booking.userId.firstName} ${booking.userId.lastName}` : 
+                          'User Deleted'
+                        }
                       </div>
-                      <div className="text-sm text-gray-500">{booking.userId.email}</div>
-                      <div className="text-sm text-gray-500">{booking.userId.phoneNumber}</div>
+                      <div className="text-sm text-gray-500">
+                        {booking.userId?.email || 'Email unavailable'}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {booking.userId?.phoneNumber || 'Phone unavailable'}
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <div className="text-sm font-medium text-gray-900">{booking.eventId.title}</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {booking.eventId?.title || 'Event Deleted'}
+                      </div>
                       <div className="text-sm text-gray-500">
-                        {new Date(booking.eventId.startTime).toLocaleDateString()} at{' '}
-                        {new Date(booking.eventId.startTime).toLocaleTimeString()}
+                        {booking.eventId?.startTime ? (
+                          <>
+                            {new Date(booking.eventId.startTime).toLocaleDateString()} at{' '}
+                            {new Date(booking.eventId.startTime).toLocaleTimeString()}
+                          </>
+                        ) : (
+                          'Date unavailable'
+                        )}
                       </div>
                     </div>
                   </td>
@@ -238,16 +253,16 @@ export default function BookingsPage() {
                     )}
                   </td>
                 </tr>
-              ))}
+              )) : (
+                <tr>
+                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                    No bookings found
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
-
-        {bookings.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No bookings found</p>
-          </div>
-        )}
       </div>
 
       {/* Pagination */}
