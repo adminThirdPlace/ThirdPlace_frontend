@@ -289,12 +289,11 @@ function AuthPageContent() {
       const userData = {
         phoneNumber: `${formData.countryCode}${cleanPhoneNumber}`,
         firstName: formData.firstName.trim(),
+        email: formData.email.toLowerCase().trim(),
         // Only include gender if it's not empty
         ...(formData.gender && { gender: formData.gender }),
         // Only include dateOfBirth if it's not empty
         ...(formData.dateOfBirth && { dateOfBirth: formData.dateOfBirth }),
-        // Only include email if it's not empty
-        ...(formData.email.trim() && { email: formData.email.toLowerCase().trim() }),
         // Only include address if any field is not empty
         ...((formData.address.city.trim() || formData.address.state.trim() || formData.address.pincode.trim()) && {
           address: {
@@ -372,6 +371,16 @@ function AuthPageContent() {
     // Validation for basic info
     if (!formData.firstName.trim()) {
       setError('First name is required');
+      return;
+    }
+    
+    if (!formData.email.trim()) {
+      setError('Email is required');
+      return;
+    }
+    
+    if (!validateEmail(formData.email)) {
+      setError('Please enter a valid email address');
       return;
     }
     
@@ -601,7 +610,7 @@ function AuthPageContent() {
           </div>
         )}        <button
           onClick={handleNext}
-          disabled={!formData.firstName || !formData.gender || !formData.dateOfBirth  || !formData.email ||loading}
+          disabled={!formData.firstName || !formData.gender || !formData.dateOfBirth || !formData.email || loading}
           className="w-full bg-black text-white py-3 rounded-lg text-xl font-medium disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors font-[family-name:var(--font-crimson-pro)] flex items-center justify-center gap-2" style={{ fontWeight: 500 }}
         >
           {loading && <Spinner size={20} />}

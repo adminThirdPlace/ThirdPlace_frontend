@@ -117,7 +117,7 @@ export class AuthService {
     phoneNumber: string;
     firstName: string;
     lastName?: string;
-    email?: string;
+    email: string;
     gender?: string;
     dateOfBirth?: string;
     address?: {
