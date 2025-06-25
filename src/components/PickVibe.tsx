@@ -43,7 +43,7 @@ export default function PickVibe() {
           snap-x snap-mandatory scroll-smooth
           scrollbar-hide
         "
-        style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-x" }}
+        style={{ WebkitOverflowScrolling: "touch" }}
       >
         {events.map((evt, i) => (
           <div           /* ⬅ no link wrapper here */
