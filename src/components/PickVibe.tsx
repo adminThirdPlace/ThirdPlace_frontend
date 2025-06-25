@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";   
+import Link from "next/link";
 
 /* ---------- swap with live data ---------- */
 const events = [
@@ -46,9 +46,8 @@ export default function PickVibe() {
         style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-x" }}
       >
         {events.map((evt, i) => (
-          <Link           /* ⬅ entire card navigates to /dashboard */
+          <div           /* ⬅ no link wrapper here */
             key={i}
-            href="/auth"
             className="
               flex-none snap-center bg-white rounded-xl cursor-pointer
               w-[80vw] max-w-[316px]
@@ -77,15 +76,15 @@ export default function PickVibe() {
             <div className="text-left pl-3 pt-2 pb-4">
               <h3 className="text-[22px] font-[500]">{evt.title}</h3>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 
       {/* ---------- CTA ---------- */}
       <div className="mb-8">
-        <Link         /* ⬅ button also just links, no auth wrapper */
+        <Link         /* ⬅ button still links to /auth */
           href="/auth"
-          className="bg-black rounded-xl w-[210px] h-[40px]  -mt-3 flex items-center justify-center"
+          className="bg-black rounded-xl w-[210px] h-[40px] -mt-3 flex items-center justify-center"
         >
           <span className="text-white text-[18px] tracking-wide">
             RESERVE YOUR SPOT
