@@ -16,10 +16,6 @@ import {
 } from "lucide-react";
 
 import { eventService, type BackendEvent } from "@/services/events.service";
-import { paymentService } from "@/services/payment.service";
-import { personalityTestService } from "@/services/personalityTest.service";
-import { useRazorpay } from "@/hooks/useRazorpay";
-import PaymentUtils from "@/utils/payment.utils";
 import { useUser } from "@/hooks/useUser";
 import { usePersonalityTestReturn } from "@/hooks/usePersonalityTestReturn";
 import { EventDetailsSkeleton } from "@/components/ui/skeleton";
@@ -32,7 +28,6 @@ function EventPageContent({ params }: PageProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [numberOfSeats, setNumberOfSeats] = useState(1);
   const router = useRouter();
-  const { openRazorpay } = useRazorpay();
   const { user } = useUser();
   
   // Handle user data refresh when returning from personality test
@@ -93,59 +88,35 @@ function EventPageContent({ params }: PageProps) {
     try {
       setIsLoading(true);
 
-      console.log('💰 Payment calculation details:', {
-        baseCuration: event.price,
-        discountPercentage: event.discountedPrice || 0,
-        experienceTicketPrice: event.experienceTicketPrice,
-        grandTotal,
-        numberOfSeats
-      });
-
-      // Log payment initiation
-      PaymentUtils.logPaymentActivity('PAYMENT_INITIATED', {
+      console.log('💰 Proceeding to payment with details:', {
         eventId: event._id,
         eventName: event.title,
         numberOfSeats,
-        totalAmount: grandTotal
+        grandTotal,
+        friendPhone
       });
 
-      // Create payment order with the calculated grandTotal
-      const orderResponse = await paymentService.createPaymentOrder(event._id, numberOfSeats, grandTotal);
-      PaymentUtils.logPaymentActivity('ORDER_CREATED', {
-        orderId: orderResponse.data.orderId,
-        bookingId: orderResponse.data.bookingId,
-        amount: orderResponse.data.amount
-      });      // Validate order response
-      if (!orderResponse.data.orderId || !orderResponse.data.razorpayKeyId) {
-        throw new Error('Invalid order response from server');
-      }      // Immediately redirect to booking success page with payment details
-      // The booking success page will show "Processing Payment" and handle Razorpay
-      const paymentParams = new URLSearchParams({
-        orderId: orderResponse.data.orderId,
-        razorpayKey: orderResponse.data.razorpayKeyId,
-        amount: orderResponse.data.amount.toString(),
-        currency: orderResponse.data.currency || 'INR',
-        eventName: orderResponse.data.event.name,
+      // Redirect to booking success page with booking details
+      // The booking success page will handle order creation and payment processing
+      const bookingParams = new URLSearchParams({
         eventId: event._id,
+        eventName: event.title,
+        numberOfSeats: numberOfSeats.toString(),
+        totalAmount: grandTotal.toString(),
         userName: user ? `${user.firstName} ${user.lastName}` : '',
         userEmail: user?.email || '',
         userContact: user?.phoneNumber || '',
+        ...(friendPhone && { friendPhone })
       });
       
-      const successUrl = `/booking-success/${orderResponse.data.bookingId}?${paymentParams.toString()}`;
-      console.log('🔗 Redirecting to booking success page for payment processing:', successUrl);      router.push(successUrl);
+      const successUrl = `/booking-success/new?${bookingParams.toString()}`;
+      console.log('🔗 Redirecting to booking success page for payment processing:', successUrl);
+
+      router.push(successUrl);
 
     } catch (error: any) {
-      console.error('Payment process failed:', error);
-      
-      // Show user-friendly error message
-      if (error.message.includes('minimum amount')) {
-        alert('The order amount is too low. Please contact support.');
-      } else if (error.message.includes('Invalid payment request')) {
-        alert('There was an issue with your booking request. Please try again.');
-      } else {
-        alert(error.message || 'Something went wrong. Please try again.');
-      }
+      console.error('Redirect to payment failed:', error);
+      alert(error.message || 'Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
     }
