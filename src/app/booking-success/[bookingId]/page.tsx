@@ -329,7 +329,7 @@ export default function BookingSuccessPage({ params }: PageProps) {
       case 'processing':
         return 'processing';
       case 'failed':
-        return booking?.paymentStatus === 'failed' ? 'failed' : 'cancelled';
+        return booking?.paymentStatus === 'failed' ? 'cancelled' : 'cancelled';
       case 'completed':
         return booking?.paymentStatus === 'paid' ? 'success' : 'failed';
       default:
@@ -340,7 +340,7 @@ export default function BookingSuccessPage({ params }: PageProps) {
           case 'paid':
             return 'success';
           case 'failed':
-            return 'failed';
+            return 'cancelled';
           default:
             return booking?.bookingStatus === 'cancelled' ? 'cancelled' : 'success';
         }
