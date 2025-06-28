@@ -47,7 +47,7 @@ export default function Home() {
         activeVideo={activeVideo}
         setActiveVideo={setActiveVideo}
       /> */}
-          <section id="pick-vibe" className="scroll-mt-24">
+          <section id="pick-vibe" className="scroll-mt-18">
         <PickVibe />
       </section>
 

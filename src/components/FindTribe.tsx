@@ -10,10 +10,10 @@ export default function FindTribe() {
       <h2 className="text-[32px] text-white mb-1">
         FIND YOUR <span className="italic">PEOPLE</span>
       </h2>
-      <p className="text-white w-full pl-7 text-[18px]">
+      <p className="text-white w-full text-center pl-7 text-[18px]">
         Say "yes" and discover the people, places, and
       </p>
-      <p className="text-white w-full pl-9 text-[18px] mb-13">
+      <p className="text-white w-full text-center pl-9 text-[18px] mb-13">
         moments you were never supposed to miss.
       </p>
 

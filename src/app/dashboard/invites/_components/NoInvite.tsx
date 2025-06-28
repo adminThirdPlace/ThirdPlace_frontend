@@ -9,7 +9,7 @@ export default function NoInvites() {
      
 
       {/* Content */}
-      <main className="flex flex-1 flex-col items-center justify-center text-center px-4 -mt-110">
+      <main className="flex flex-1 flex-col items-center justify-center text-center px-4 -mt-95">
       
         <Ticket className="h-19 w-16 stroke-1 rotate-315" />
 
