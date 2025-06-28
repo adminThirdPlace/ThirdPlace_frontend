@@ -69,7 +69,7 @@ export default function NewsSection({ videoId, activeVideo, setActiveVideo }: Pr
         <div className="w-full lg:w-1/2 flex justify-center">
           <div className="relative mr-6 ml-6 border-white border-[2px] rounded-xl overflow-hidden shadow-xl w-full max-w-xl">
             <video
-              src="https://res.cloudinary.com/dfm1bqcnz/video/upload/v1749925012/lem6stjjtzd0bptsyb8v.mp4"
+              src="https://l7qzt21i1euwjh0a.public.blob.vercel-storage.com/lem6stjjtzd0bptsyb8v-vwMA6jLaDq7mpY2QxQyKU0JY456JQS.mp4"
               poster="/poster_video2.png"
               autoPlay
               loop

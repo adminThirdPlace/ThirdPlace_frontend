@@ -19,7 +19,7 @@ function HeroSection({ videoId, activeVideo, setActiveVideo }: Props) {
       <div className="relative w-full">
         <video
           
-          src="https://res.cloudinary.com/dfm1bqcnz/video/upload/v1749924972/nd1lstcb1wc5ra3tutru.mp4"
+          src="https://l7qzt21i1euwjh0a.public.blob.vercel-storage.com/nd1lstcb1wc5ra3tutru-obADr8lIjKUGumkzsG0nLS1n5atHwD.mp4"
           poster="/poster_video1.png"
           autoPlay
           loop
