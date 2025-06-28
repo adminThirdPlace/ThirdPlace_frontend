@@ -314,7 +314,22 @@ function EventsContent() {
     setSuccessMessage('');
   };  
   const openEditModal = (event: Event) => {
-    setSelectedEvent(event);    setFormData({
+    setSelectedEvent(event);
+    
+    // Helper function to format datetime for datetime-local input
+    const formatDateTimeLocal = (isoString: string): string => {
+      if (!isoString) return '';
+      const date = new Date(isoString);
+      // Format as YYYY-MM-DDTHH:MM (required format for datetime-local)
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    };
+
+    setFormData({
       title: event.title,
       description: event.description,
       price: event.price,
@@ -325,8 +340,8 @@ function EventsContent() {
       lat: event.eventLocation.lat,
       lng: event.eventLocation.lng,
       capacity: event.capacity,
-      startTime: event.startTime.split('T')[0] + 'T' + event.startTime.split('T')[1]?.substring(0, 5) || '',
-      endTime: event.endTime.split('T')[0] + 'T' + event.endTime.split('T')[1]?.substring(0, 5) || '',
+      startTime: formatDateTimeLocal(event.startTime),
+      endTime: formatDateTimeLocal(event.endTime),
       category: event.category,
       subCategory: event.subCategory || '',
       status: event.status,
