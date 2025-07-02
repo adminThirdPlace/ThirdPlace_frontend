@@ -380,8 +380,7 @@ const grandTotal = Math.round(event.experienceTicketPrice + totalCurationWithGST
         >
           <div className="flex justify-between">
             <p className="whitespace-pre-line">
-              This covers the cost of the curated activity – like salsa,
-              game night or a hands-on workshop. Food & drinks not included.
+            This includes the complete experience — curated activity, food, and limited drinks.
             </p>
             <label
               htmlFor="experience-info"

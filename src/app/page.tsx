@@ -54,9 +54,6 @@ export default function Home() {
       <section id="how-it-works" className="scroll-mt-24">
         <StepCarousel />
       </section>
-
-  
-
       <FindTribe />
       <WhatsappSection />
       <Footer />
