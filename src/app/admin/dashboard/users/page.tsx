@@ -11,7 +11,8 @@ import {
   MapPin,
   Calendar,
   Eye,
-  AlertCircle
+  AlertCircle,
+  UserPlus
 } from 'lucide-react';
 
 interface User {
@@ -28,6 +29,11 @@ interface User {
     country?: string;
   };
   eventsBooked: any[];
+  invitedFriends?: {
+    phoneNumber: string;
+    invitedAt: string;
+    status: 'pending' | 'joined';
+  }[];
   personalityTestCompleted: boolean;
   createdAt: string;
 }
@@ -38,6 +44,7 @@ export default function UsersPage() {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [personalityTestFilter, setPersonalityTestFilter] = useState('all');
+  const [invitedFriendsFilter, setInvitedFriendsFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -73,7 +80,11 @@ export default function UsersPage() {
       (personalityTestFilter === 'completed' && user.personalityTestCompleted) ||
       (personalityTestFilter === 'pending' && !user.personalityTestCompleted);
     
-    return matchesSearch && matchesPersonalityTest;
+    const matchesInvitedFriends = invitedFriendsFilter === 'all' ||
+      (invitedFriendsFilter === 'has_invited' && user.invitedFriends && user.invitedFriends.length > 0) ||
+      (invitedFriendsFilter === 'no_invites' && (!user.invitedFriends || user.invitedFriends.length === 0));
+    
+    return matchesSearch && matchesPersonalityTest && matchesInvitedFriends;
   });
 
   const handleViewUser = (user: User) => {
@@ -104,7 +115,15 @@ export default function UsersPage() {
               Total Users: {users.length}
             </div>
           </div>
-          {(searchTerm || personalityTestFilter !== 'all') && (
+          <div className="bg-white px-4 py-2 rounded-lg border border-gray-200">
+            <div className="flex items-center text-sm text-gray-600">
+              <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              Total Invites: {users.reduce((total, user) => total + (user.invitedFriends?.length || 0), 0)}
+            </div>
+          </div>
+          {(searchTerm || personalityTestFilter !== 'all' || invitedFriendsFilter !== 'all') && (
             <div className="bg-blue-50 px-4 py-2 rounded-lg border border-blue-200">
               <div className="flex items-center text-sm text-blue-600">
                 <Filter className="h-4 w-4 mr-2" />
@@ -139,6 +158,15 @@ export default function UsersPage() {
               <option value="all">All Users</option>
               <option value="completed">Test Completed</option>
               <option value="pending">Test Pending</option>
+            </select>
+            <select
+              value={invitedFriendsFilter}
+              onChange={(e) => setInvitedFriendsFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="all">All Users</option>
+              <option value="has_invited">Has Invited Friends</option>
+              <option value="no_invites">No Invites</option>
             </select>
             <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center">
               <Filter className="h-4 w-4 mr-2" />
@@ -175,6 +203,9 @@ export default function UsersPage() {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Events Booked
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Friends Invited
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Joined
@@ -232,6 +263,11 @@ export default function UsersPage() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       {user.eventsBooked?.length || 0} events
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      {user.invitedFriends?.length || 0} friends
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -375,18 +411,63 @@ function UserDetailModal({ user, onClose }: { user: User; onClose: () => void })
           )}
 
           {/* Statistics */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div className="bg-blue-50 rounded-lg p-4">
               <div className="text-2xl font-bold text-blue-600">{user.eventsBooked?.length || 0}</div>
               <div className="text-sm text-blue-800">Events Booked</div>
             </div>
             <div className="bg-green-50 rounded-lg p-4">
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-green-600">{user.invitedFriends?.length || 0}</div>
+              <div className="text-sm text-green-800">Friends Invited</div>
+            </div>
+            <div className="bg-purple-50 rounded-lg p-4">
+              <div className="text-2xl font-bold text-purple-600">
                 {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}
               </div>
-              <div className="text-sm text-green-800">Joined Date</div>
+              <div className="text-sm text-purple-800">Joined Date</div>
             </div>
           </div>
+
+          {/* Invited Friends Details */}
+          {user.invitedFriends && user.invitedFriends.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Invited Friends</label>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="space-y-2">
+                  {user.invitedFriends.map((friend, index) => (
+                    <div key={index} className="flex items-center justify-between py-2 px-3 bg-white rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0">
+                          <div className="h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
+                            <span className="text-xs font-medium text-gray-600">
+                              {friend.phoneNumber.slice(-2)}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {friend.phoneNumber}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Invited {new Date(friend.invitedAt).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          friend.status === 'joined' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {friend.status === 'joined' ? 'Joined' : 'Pending'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

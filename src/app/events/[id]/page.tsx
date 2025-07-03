@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { eventService, type BackendEvent } from "@/services/events.service";
+import { userService } from "@/services/user.service";
 import { useUser } from "@/hooks/useUser";
 import { usePersonalityTestReturn } from "@/hooks/usePersonalityTestReturn";
 import { EventDetailsSkeleton } from "@/components/ui/skeleton";
@@ -38,13 +39,29 @@ function EventPageContent({ params }: PageProps) {
   const [friendPhone, setFriendPhone] = useState("");
   const [showUnderstandModal, setShowUnderstandModal] = useState(false);
   const [hasSeenUnderstand, setHasSeenUnderstand] = useState(false);
+  const [inviteError, setInviteError] = useState("");
 
   function handleInvite() {
-    if (inviteInput.trim().length === 10) {
-      setFriendPhone(inviteInput.trim());
-      setInviteInput("");
-      setShowInviteModal(false);
+    // Clear any previous errors
+    setInviteError("");
+    
+    const phoneNumber = inviteInput.trim();
+    
+    // Validate phone number
+    if (phoneNumber.length !== 10) {
+      setInviteError("Please enter a valid 10-digit phone number");
+      return;
     }
+    
+    // Check if user is trying to invite themselves
+    if (user?.phoneNumber && user.phoneNumber.endsWith(phoneNumber)) {
+      setInviteError("You cannot invite yourself");
+      return;
+    }
+    
+    setFriendPhone(phoneNumber);
+    setInviteInput("");
+    setShowInviteModal(false);
   }
 
 
@@ -95,6 +112,19 @@ function EventPageContent({ params }: PageProps) {
         grandTotal,
         friendPhone
       });
+
+      // Save friend invite to backend if friend phone is provided
+      if (friendPhone && friendPhone.trim()) {
+        try {
+          console.log('📞 Saving friend invite to backend:', friendPhone);
+          await userService.inviteFriend(friendPhone.trim());
+          console.log('✅ Friend invite saved successfully');
+        } catch (inviteError: any) {
+          console.warn('⚠️ Failed to save friend invite:', inviteError.message);
+          // Don't block the payment flow if invite save fails
+          // You could show a toast notification here if needed
+        }
+      }
 
       // Redirect to booking success page with booking details
       // The booking success page will handle order creation and payment processing
@@ -176,18 +206,28 @@ const grandTotal = Math.round(event.experienceTicketPrice + totalCurationWithGST
         Please enter your friend's phone number
       </p>
 
-      <div className="flex w-full items-center mb-6 border border-black/50 rounded-xl px-3 py-2 bg-[#fafafa]">
+      <div className="flex w-full items-center mb-2 border border-black/50 rounded-xl px-3 py-2 bg-[#fafafa]">
         <span className="text-gray-700 font-[400] text-[18px] pr-2">+91</span>
         <input
           type="text"
           value={inviteInput}
-          onChange={e => setInviteInput(e.target.value.replace(/\D/, ""))}
+          onChange={e => {
+            setInviteInput(e.target.value.replace(/\D/, ""));
+            setInviteError(""); // Clear error when user types
+          }}
           placeholder={friendPhone ? friendPhone : "33333 33333"}
           className="w-full border-0 bg-transparent focus:outline-none text-[17px] font-[300] tracking-wide"
           maxLength={10}
           inputMode="numeric"
         />
       </div>
+
+      {/* Error message */}
+      {inviteError && (
+        <p className="text-red-500 text-[13px] font-[300] mb-4 text-center">
+          {inviteError}
+        </p>
+      )}
 
       <div className="flex w-full gap-2 mt-1">
         {friendPhone ? (
@@ -197,6 +237,7 @@ const grandTotal = Math.round(event.experienceTicketPrice + totalCurationWithGST
               onClick={() => {
                 setFriendPhone("");
                 setInviteInput("");
+                setInviteError("");
                 setShowInviteModal(false);
               }}
             >
@@ -213,7 +254,10 @@ const grandTotal = Math.round(event.experienceTicketPrice + totalCurationWithGST
           <>
             <button
               className="w-1/2 py-2 rounded-2xl border border-black text-black font-[400] bg-white"
-              onClick={() => setShowInviteModal(false)}
+              onClick={() => {
+                setShowInviteModal(false);
+                setInviteError("");
+              }}
             >
               cancel
             </button>
@@ -323,6 +367,7 @@ const grandTotal = Math.round(event.experienceTicketPrice + totalCurationWithGST
         className="inline-block rounded-full bg-black px-4 py-1 text-sm font-[400] text-white"
         onClick={() => {
           setInviteInput(friendPhone);
+          setInviteError("");
           setShowInviteModal(true);
         }}
       >
