@@ -88,7 +88,7 @@ function Footer() {
         <a href="/contact-us" className="hover:underline text-[14px] sm:text-sm">
           Contact us
         </a>
-        <a href="https://thirdplace.typeform.com/to/iPAmuKne" className="hover:underline text-[14px] sm:text-sm">
+        <a href="https://form.typeform.com/to/iPAmuKne" className="hover:underline text-[14px] sm:text-sm">
           Become a partner
         </a>
         <a href="/privacy-policy" className="hover:underline text-[14px] sm:text-sm">

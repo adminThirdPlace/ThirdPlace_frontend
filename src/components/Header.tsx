@@ -35,7 +35,7 @@ function Header() {
 </Link>
           <Link href="/dashboard" className="hover:text-pink-400 transition-colors font-semibold">Upcoming events</Link>
           <a
-            href="https://thirdplace.typeform.com/to/iPAmuKne"
+            href="https://form.typeform.com/to/iPAmuKne"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-pink-400 transition-colors font-semibold"
@@ -97,7 +97,7 @@ function Header() {
   Upcoming events
 </a>
           <a
-            href="https://thirdplace.typeform.com/to/iPAmuKne"
+            href="https://form.typeform.com/to/iPAmuKne"
             target="_blank"
             rel="noopener noreferrer"
             className="py-2 text-white font-[200px] text-[22px] hover:text-pink-400 w-full text-left ml-5"
