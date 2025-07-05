@@ -31,6 +31,7 @@ export interface BackendEvent {
   attendeeCount: number;
   createdAt: string;
   updatedAt: string;
+  experienceTicketContent :string;
 }
 
 export interface EventsResponse {
