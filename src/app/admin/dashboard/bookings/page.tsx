@@ -2,15 +2,36 @@
 
 import { useState, useEffect } from 'react';
 import { adminService } from '@/services/admin.service';
+import { X, Users, Calendar, DollarSign, Clock, User, Mail, Phone, MapPin, UserPlus } from 'lucide-react';
+
+interface User {
+  _id: string;
+  firstName: string;
+  lastName?: string;
+  email: string;
+  phoneNumber: string;
+  gender?: string;
+  dateOfBirth?: string;
+  address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    pincode?: string;
+  };
+  eventsBooked: any[];
+  invitedFriends?: {
+    phoneNumber: string;
+    invitedAt: string;
+    status: 'pending' | 'joined';
+  }[];
+  personalityTestCompleted: boolean;
+  createdAt: string;
+}
 
 interface Booking {
   _id: string;
-  userId: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber: string;
-  } | null;
+  userId: User | null;
   eventId: {
     _id: string;
     title: string;
@@ -23,6 +44,172 @@ interface Booking {
   createdAt: string;
 }
 
+// UserDetailModal component
+function UserDetailModal({ user, onClose }: { user: User; onClose: () => void }) {
+  if (!user) return null;
+
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  const handleEscapeKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onClose();
+    }
+  };
+
+  return (
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      onClick={handleBackdropClick}
+      onKeyDown={handleEscapeKey}
+      tabIndex={-1}
+    >
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">User Details</h2>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <X className="h-5 w-5 text-gray-500" />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-6">
+          {/* User Info */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-4">
+              <div className="h-16 w-16 bg-indigo-500 rounded-full flex items-center justify-center">
+                <span className="text-xl font-bold text-white">
+                  {user.firstName?.charAt(0)?.toUpperCase() || 'U'}
+                </span>
+              </div>
+              <div>
+                <h3 className="text-lg font-medium text-gray-900">
+                  {user.firstName}{user.lastName ? ` ${user.lastName}` : ''}
+                </h3>
+                <p className="text-gray-500">{user.email}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                <div className="flex items-center space-x-2">
+                  <Phone className="h-4 w-4 text-gray-400" />
+                  <span className="text-sm text-gray-900">{user.phoneNumber}</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Gender</label>
+                <span className="text-sm text-gray-900">{user.gender || 'Not specified'}</span>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+                <span className="text-sm text-gray-900">
+                  {user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : 'Not specified'}
+                </span>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Personality Test</label>
+                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                  user.personalityTestCompleted 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {user.personalityTestCompleted ? 'Completed' : 'Pending'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Address */}
+          {user.address && (
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">Address</label>
+              <div className="flex items-start space-x-2">
+                <MapPin className="h-4 w-4 text-gray-400 mt-0.5" />
+                <div className="text-sm text-gray-900">
+                  {user.address.street && <div>{user.address.street}</div>}
+                  {user.address.city && <div>{user.address.city}</div>}
+                  {user.address.state && <div>{user.address.state}</div>}
+                  {user.address.country && <div>{user.address.country}</div>}
+                  {user.address.pincode && <div>{user.address.pincode}</div>}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Statistics */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-blue-50 rounded-lg p-4">
+              <div className="text-2xl font-bold text-blue-600">{user.eventsBooked?.length || 0}</div>
+              <div className="text-sm text-blue-800">Events Booked</div>
+            </div>
+            <div className="bg-green-50 rounded-lg p-4">
+              <div className="text-2xl font-bold text-green-600">{user.invitedFriends?.length || 0}</div>
+              <div className="text-sm text-green-800">Friends Invited</div>
+            </div>
+            <div className="bg-purple-50 rounded-lg p-4">
+              <div className="text-2xl font-bold text-purple-600">
+                {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}
+              </div>
+              <div className="text-sm text-purple-800">Joined Date</div>
+            </div>
+          </div>
+
+          {/* Invited Friends Details */}
+          {user.invitedFriends && user.invitedFriends.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Invited Friends</label>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="space-y-2">
+                  {user.invitedFriends.map((friend, index) => (
+                    <div key={index} className="flex items-center justify-between py-2 px-3 bg-white rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0">
+                          <div className="h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
+                            <span className="text-xs font-medium text-gray-600">
+                              {friend.phoneNumber.slice(-2)}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {friend.phoneNumber}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Invited {new Date(friend.invitedAt).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          friend.status === 'joined' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {friend.status === 'joined' ? 'Joined' : 'Pending'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +220,8 @@ export default function BookingsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalBookings, setTotalBookings] = useState(0);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showUserModal, setShowUserModal] = useState(false);
 
   const fetchBookings = async () => {
     try {
@@ -247,11 +436,48 @@ export default function BookingsPage() {
                 <tr key={booking._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <div className="text-sm font-medium text-gray-900">
-                        {booking.userId ? 
-                          `${booking.userId.firstName} ${booking.userId.lastName}` : 
+                      <div className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                        {booking.userId ? (
+                          <>
+                            <button
+                              onClick={() => {
+                                setSelectedUser(booking.userId);
+                                setShowUserModal(true);
+                              }}
+                              className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                            >
+                              {`${booking.userId.firstName}${booking.userId.lastName ? ` ${booking.userId.lastName}` : ''}`}
+                            </button>
+                            {booking.userId.invitedFriends && booking.userId.invitedFriends.length > 0 && (
+                              <div className="flex items-center gap-1 relative group">
+                                <UserPlus className="h-4 w-4 text-green-600" />
+                                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                                  {booking.userId.invitedFriends.length}
+                                </span>
+                                
+                                {/* Tooltip */}
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                                  <div className="font-medium mb-1">Invited Friends:</div>
+                                  {booking.userId.invitedFriends.map((friend, idx) => (
+                                    <div key={idx} className="flex items-center justify-between gap-2">
+                                      <span>{friend.phoneNumber}</span>
+                                      <span className={`text-xs px-1 py-0.5 rounded ${
+                                        friend.status === 'joined' ? 'bg-green-600 text-green-100' : 'bg-yellow-600 text-yellow-100'
+                                      }`}>
+                                        {friend.status}
+                                      </span>
+                                    </div>
+                                  ))}
+                                  
+                                  {/* Tooltip arrow */}
+                                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        ) : (
                           'User Deleted'
-                        }
+                        )}
                       </div>
                       <div className="text-sm text-gray-500">
                         {booking.userId?.email || 'Email unavailable'}
@@ -367,6 +593,17 @@ export default function BookingsPage() {
             Next
           </button>
         </div>
+      )}
+
+      {/* User Detail Modal */}
+      {showUserModal && selectedUser && (
+        <UserDetailModal
+          user={selectedUser}
+          onClose={() => {
+            setSelectedUser(null);
+            setShowUserModal(false);
+          }}
+        />
       )}
     </div>
   );
