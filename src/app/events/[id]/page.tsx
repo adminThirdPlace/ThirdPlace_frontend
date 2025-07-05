@@ -164,7 +164,7 @@ const curationAfterDiscount = Math.round(baseCuration - discountAmount);
 const gstOnCuration = Math.round(curationAfterDiscount * 0.18); // 18% GST
 const totalCurationWithGST = Math.round(curationAfterDiscount + gstOnCuration);
 const grandTotal = Math.round(event.experienceTicketPrice + totalCurationWithGST);
-
+ const experience = event.experienceTicketContent
   // date & time - use backend startTime
   const dateObj = new Date(event.startTime);
   const dateLabel = dateObj.toLocaleDateString("en-IN", {
@@ -425,7 +425,7 @@ const grandTotal = Math.round(event.experienceTicketPrice + totalCurationWithGST
         >
           <div className="flex justify-between">
             <p className="whitespace-pre-line">
-            This includes the complete experience — curated activity, food, and limited drinks.
+           {experience}
             </p>
             <label
               htmlFor="experience-info"
