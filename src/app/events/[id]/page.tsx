@@ -360,8 +360,7 @@ const grandTotal = Math.round(event.experienceTicketPrice + totalCurationWithGST
         +91 {friendPhone}
       </span>
       <p className="text-sm text-gray-700 leading-snug">
-        They must join Third Place in order to attend.
-        We’ll text a priority signup link.
+        They’ll need to join and book separately to confirm their spot — we’ll send them a priority signup link.
       </p>
       <button
         className="inline-block rounded-full bg-black px-4 py-1 text-sm font-[400] text-white"
@@ -384,7 +383,8 @@ const grandTotal = Math.round(event.experienceTicketPrice + totalCurationWithGST
         friends attend in your group
       </p>
       <p className="font-[300] text-[14px]">
-        your friend stays in your group throughout the experience.
+        Simply add them above — they’ll need to book & confirm separately.
+
       </p>
     </div>
   </div>
@@ -560,8 +560,8 @@ const grandTotal = Math.round(event.experienceTicketPrice + totalCurationWithGST
 
     {/* first paragraph */}
     <p className="text-[16px] -mt-1 font-[300] text-black leading-snug">
-      You’ll be notified if you’re selected on the day of the experience.  
-      If not, you’ll get a full refund – no questions asked.
+     You’ll be notified at least a day before the experience if you’re selected. We take time to curate groups thoughtfully to ensure the vibe feels right. If not selected, you’ll get a full refund — no questions asked.
+
     </p>
 
     {/* 2️⃣ Second heading */}
@@ -570,7 +570,8 @@ const grandTotal = Math.round(event.experienceTicketPrice + totalCurationWithGST
     </h4>
     {/* second paragraph */}
     <p className="text-[16px] -mt-2 font-[300] mb-2 text-black leading-snug">
-      Simply add them above, before the cutoff time.
+   Simply add them above — they’ll need to book and pay separately to confirm their spot.
+
     </p>
   </div>
 </section>      </article>
