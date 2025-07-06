@@ -30,7 +30,6 @@ const Understand: React.FC<UnderstandProps> = ({ onClose }) => {
         </button>
 
         {/* Heading */}
-               {/* Heading */}
         <h2 className="mb-4 text-center text-xl font-semibold">Before you pay</h2>
 
         {/* Bullet list */}
@@ -61,19 +60,23 @@ const Understand: React.FC<UnderstandProps> = ({ onClose }) => {
             <span className="font-semibold">EXACTLY ON TIME.</span> Our
             experiences are sacred and authentic — treat them as such.
           </li>
+
+          {/* ––– UPDATED COPY STARTS HERE ––– */}
           <li>
-            You may add a +1 till{" "}
-            <span className="font-semibold">a day before the event</span> — just
-            make sure they’re someone you value showing up, too.
+            You can invite a friend up to{" "}
+            <span className="font-semibold">a day before the event</span> —
+            just make sure they’re someone who values showing up, too.
           </li>
           <li>
-            Each member is <span className="font-semibold">ONLY</span> permitted
-            a <span className="font-semibold">SINGLE +1.</span> If your +1
-            doesn’t receive a confirmation text, they haven’t been processed
-            yet. They’ll receive event details separately&nbsp;&amp;&nbsp;
-            <span className="font-semibold">WILL HAVE TO PAY THE FEE</span> for
-            this experience.
+            You can invite{" "}
+            <span className="font-semibold">ONE FRIEND</span> per experience.
+            They’ll need to{" "}
+            <span className="font-semibold">BOOK AND PAY SEPARATELY</span> to
+            confirm their spot. If they haven’t received a confirmation text
+            yet, they’re not in — we’re still processing. Once confirmed,
+            they’ll get all event details separately.
           </li>
+          {/* ––– UPDATED COPY ENDS HERE ––– */}
         </ul>
 
         {/* CTA */}
