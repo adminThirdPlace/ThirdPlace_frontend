@@ -219,6 +219,16 @@ class AdminService {
       // Add text fields
       formData.append('title', eventData.title.trim());
       formData.append('description', eventData.description.trim());
+      
+      // Add optional content fields
+      if (eventData.understandContent && eventData.understandContent.trim()) {
+        formData.append('understandContent', eventData.understandContent.trim());
+      }
+      
+      if (eventData.experienceTicketContent && eventData.experienceTicketContent.trim()) {
+        formData.append('experienceTicketContent', eventData.experienceTicketContent.trim());
+      }
+      
       formData.append('category', eventData.category);
       formData.append('startTime', new Date(eventData.startTime).toISOString());
       formData.append('endTime', new Date(eventData.endTime).toISOString());
@@ -324,6 +334,16 @@ class AdminService {
       // Add text fields
       formData.append('title', eventData.title.trim());
       formData.append('description', eventData.description.trim());
+      
+      // Add optional content fields
+      if (eventData.understandContent && eventData.understandContent.trim()) {
+        formData.append('understandContent', eventData.understandContent.trim());
+      }
+      
+      if (eventData.experienceTicketContent && eventData.experienceTicketContent.trim()) {
+        formData.append('experienceTicketContent', eventData.experienceTicketContent.trim());
+      }
+      
       formData.append('category', eventData.category);
       formData.append('startTime', new Date(eventData.startTime).toISOString());
       formData.append('endTime', new Date(eventData.endTime).toISOString());

@@ -164,7 +164,7 @@ const curationAfterDiscount = Math.round(baseCuration - discountAmount);
 const gstOnCuration = Math.round(curationAfterDiscount * 0.18); // 18% GST
 const totalCurationWithGST = Math.round(curationAfterDiscount + gstOnCuration);
 const grandTotal = Math.round(event.experienceTicketPrice + totalCurationWithGST);
- const experience = event.experienceTicketContent
+const experience = event.experienceTicketContent || "Details about what's included in this experience ticket will be provided.";
   // date & time - use backend startTime
   const dateObj = new Date(event.startTime);
   const dateLabel = dateObj.toLocaleDateString("en-IN", {

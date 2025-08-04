@@ -23,6 +23,8 @@ interface Event {
   _id: string;
   title: string;
   description: string;
+  understandContent?: string;
+  experienceTicketContent?: string;
   price: number;
   experienceTicketPrice: number;
   discountedPrice?: number;
@@ -54,6 +56,8 @@ interface Event {
 interface EventFormData {
   title: string;
   description: string;
+  understandContent?: string;
+  experienceTicketContent?: string;
   price: number;
   experienceTicketPrice: number;
   discountedPrice?: number; // Discount percentage
@@ -80,6 +84,8 @@ interface EventFormData {
 interface ValidationErrors {
   title?: string;
   description?: string;
+  understandContent?: string;
+  experienceTicketContent?: string;
   price?: string;
   experienceTicketPrice?: string;
   discountedPrice?: string;
@@ -118,6 +124,8 @@ function EventsContent() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);  const [formData, setFormData] = useState<EventFormData>({
     title: '',
     description: '',
+    understandContent: '',
+    experienceTicketContent: '',
     price: 0,
     experienceTicketPrice: 0,
     discountedPrice: 0,
@@ -288,6 +296,8 @@ function EventsContent() {
     setFormData({
       title: '',
       description: '',
+      understandContent: '',
+      experienceTicketContent: '',
       price: 0,
       experienceTicketPrice: 0,
       discountedPrice: 0,
@@ -332,6 +342,8 @@ function EventsContent() {
     setFormData({
       title: event.title,
       description: event.description,
+      understandContent: event.understandContent || '',
+      experienceTicketContent: event.experienceTicketContent || '',
       price: event.price,
       experienceTicketPrice: event.experienceTicketPrice,
       discountedPrice: event.discountedPrice || 0,
@@ -368,6 +380,16 @@ function EventsContent() {
       case 'description':
         if (!value || value.length < 10) return 'Description must be at least 10 characters long';
         if (value.length > 2000) return 'Description must be less than 2000 characters';
+        return '';
+      
+      case 'understandContent':
+        if (value && value.length > 0 && value.length < 10) return 'Understand content must be at least 10 characters long';
+        if (value && value.length > 2000) return 'Understand content must be less than 2000 characters';
+        return '';
+      
+      case 'experienceTicketContent':
+        if (value && value.length > 0 && value.length < 10) return 'Experience ticket content must be at least 10 characters long';
+        if (value && value.length > 2000) return 'Experience ticket content must be less than 2000 characters';
         return '';
       
       case 'venueName':
@@ -447,13 +469,29 @@ function EventsContent() {
       if (key !== 'matchingTags' && key !== 'lat' && key !== 'lng' && key !== 'subCategory' && 
           key !== 'hostId' && key !== 'safetyInfo' && key !== 'rsvpDeadline' && 
           key !== 'cancellationPolicy' && key !== 'feedbackEnabled' && key !== 'status' && 
-          key !== 'discountedPrice' && key !== 'images' && key !== 'existingImageUrls') {
+          key !== 'discountedPrice' && key !== 'images' && key !== 'existingImageUrls' &&
+          key !== 'understandContent' && key !== 'experienceTicketContent') {
         const error = validateField(key, formData[key as keyof EventFormData]);
         if (error) {
           errors[key as keyof ValidationErrors] = error;
         }
       }
     });
+
+    // Validate optional fields if they have content
+    if (formData.understandContent && formData.understandContent.trim()) {
+      const error = validateField('understandContent', formData.understandContent);
+      if (error) {
+        errors.understandContent = error;
+      }
+    }
+
+    if (formData.experienceTicketContent && formData.experienceTicketContent.trim()) {
+      const error = validateField('experienceTicketContent', formData.experienceTicketContent);
+      if (error) {
+        errors.experienceTicketContent = error;
+      }
+    }
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -806,7 +844,61 @@ function EventFormModal({
                 {formData.description.length}/2000
               </span>
             </div>
-          </div>          {/* Price Fields */}
+          </div>
+
+          {/* Understand Content */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Understand Content
+              <span className="text-xs text-gray-500 ml-2">(Optional)</span>
+            </label>
+            <textarea
+              name="understandContent"
+              value={formData.understandContent || ''}
+              onChange={onChange}
+              rows={3}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                validationErrors.understandContent ? 'border-red-300' : 'border-gray-300'
+              }`}
+              placeholder="Content to help users understand the event better..."
+            />
+            <div className="flex justify-between items-center mt-1">
+              <span className={`text-xs ${validationErrors.understandContent ? 'text-red-600' : 'text-gray-500'}`}>
+                {validationErrors.understandContent || 'Optional field, minimum 10 characters if provided, maximum 2000'}
+              </span>
+              <span className="text-xs text-gray-400">
+                {(formData.understandContent || '').length}/2000
+              </span>
+            </div>
+          </div>
+
+          {/* Experience Ticket Content */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Experience Ticket Content
+              <span className="text-xs text-gray-500 ml-2">(Optional)</span>
+            </label>
+            <textarea
+              name="experienceTicketContent"
+              value={formData.experienceTicketContent || ''}
+              onChange={onChange}
+              rows={3}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                validationErrors.experienceTicketContent ? 'border-red-300' : 'border-gray-300'
+              }`}
+              placeholder="Describe what's included in the experience ticket..."
+            />
+            <div className="flex justify-between items-center mt-1">
+              <span className={`text-xs ${validationErrors.experienceTicketContent ? 'text-red-600' : 'text-gray-500'}`}>
+                {validationErrors.experienceTicketContent || 'Optional field, minimum 10 characters if provided, maximum 2000'}
+              </span>
+              <span className="text-xs text-gray-400">
+                {(formData.experienceTicketContent || '').length}/2000
+              </span>
+            </div>
+          </div>
+
+          {/* Price Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -5,6 +5,8 @@ export interface BackendEvent {
   eventId?: string;
   title: string;
   description: string;
+  understandContent?: string;
+  experienceTicketContent?: string;
   category: string;
   subCategory?: string;
   startTime: string;
@@ -31,7 +33,6 @@ export interface BackendEvent {
   attendeeCount: number;
   createdAt: string;
   updatedAt: string;
-  experienceTicketContent :string;
 }
 
 export interface EventsResponse {
