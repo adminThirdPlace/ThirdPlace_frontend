@@ -81,20 +81,13 @@ function EventPageContent({ params }: PageProps) {
   }, [params]);
 
   if (!event) return <EventDetailsSkeleton />;  const handleContinue = async () => {
-    // First, check if personality test is completed
-    if (!user?.personalityTestCompleted) {
-      const currentPath = window.location.pathname;
-      router.push(`/personality-test?returnTo=${encodeURIComponent(currentPath)}`);
-      return;
-    }
-
-    // If personality test is completed but user hasn't seen the UnderStand modal, show it first
+    // If user hasn't seen the UnderStand modal, show it first
     if (!hasSeenUnderstand) {
       setShowUnderstandModal(true);
       return;
     }
 
-    // If user has seen the modal and completed personality test, proceed with payment
+    // Proceed with payment
     await handleProceedWithPayment();
   };
 
@@ -179,7 +172,6 @@ const experience = event.experienceTicketContent || "Details about what's includ
   // Determine the button text based on current state
   const getButtonText = () => {
     if (isLoading) return 'Processing...';
-    if (!user?.personalityTestCompleted) return 'Continue';
     if (!hasSeenUnderstand) return 'Continue';
     return 'Proceed to payment';
   };
