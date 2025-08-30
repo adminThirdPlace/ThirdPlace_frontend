@@ -65,7 +65,7 @@ const getBookingCopy = (status: string) => {
     case "refunded":
       return "Not this time — but your next special evening is just around the corner.";
     default:
-      return "You're on the list! We're curating your special evening, confirmed on the day of the event.";
+      return "You’re on the list! We’ll confirm your spot a few days before the event.";
   }
 };
 
