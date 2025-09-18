@@ -6,10 +6,10 @@ import Link from "next/link";
 
 /* ---------- swap with live data ---------- */
 const events = [
-  { src: "/secret supper & stories.png", title: "Secret, Supper & Stories", location: "Koramangala, BLR" },
-  { src: "/sangeet.JPG",                 title: "Sangeet Social",           location: "Indiranagar, BLR"  },
-  { src: "/salsa.JPG",                   title: "Salsa Socials Soirée",     location: "HSR Layout, BLR"   },
-  { src: "/Drunk bowling.JPG",           title: "Drunk Bowling",            location: "MG Road, BLR"      },
+  { src: "/a.PNG",           title: "Sunset & Walk by the lake",  location: "MG Road, BLR"      },
+  { src: "/b.PNG",           title: "Pitch and Pair",  location: "MG Road, BLR"      },
+  { src: "/c.PNG",           title: "Listening Room",  location: "MG Road, BLR"      },
+    { src: "/secret supper & stories.png", title: "Secret, Supper & Stories", location: "Koramangala, BLR" },
   { src: "/secret picnic.PNG",           title: "Secret Picnic Meet-Cute",  location: "MG Road, BLR"      },
 ];
 
