@@ -45,10 +45,10 @@ const Understand: React.FC<UnderstandProps> = ({ onClose }) => {
             receive a full <span className="font-semibold">REFUND</span> — no
             questions asked.
           </li>
-          <li>
+          {/* <li>
             This payment <span className="font-semibold">includes</span> the
             cost of food or drinks for this experience.
-          </li>
+          </li> */}
           <li>
             Once confirmed, your spot is final. Third Place does not tolerate
             last-minute cancellations, no-shows, or ghosting. It impacts the
